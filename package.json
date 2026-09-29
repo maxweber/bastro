@@ -1,0 +1,14 @@
+{
+  "name": "bastro",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Astro-shaped static site generator for babashka and Replicant",
+  "devDependencies": {
+    "cherry-cljs": "0.6.38",
+    "esbuild": "^0.25.0",
+    "jsdom": "^26.0.0",
+    "sharp-cli": "^6.1.0",
+    "transit-js": "^0.8.874"
+  }
+}

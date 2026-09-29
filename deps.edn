@@ -1,0 +1,5 @@
+{:paths ["src" "resources"]
+ :deps  {no.cjohansen/replicant         {:mvn/version "2026.07.1"}
+         io.github.nextjournal/markdown {:mvn/version "0.7.225"}
+         metosin/malli                  {:mvn/version "0.20.1"}
+         stasis/stasis                  {:mvn/version "2023.11.21"}}}

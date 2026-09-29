@@ -1,0 +1,6 @@
+{:paths ["src" "islands"]
+ :deps  {bastro/bastro {:local/root ".."}}
+ :tasks
+ {build  {:doc "Build the site into dist/"        :requires ([bastro.tasks :as t]) :task (t/build 'site)}
+  routes {:doc "Print every URL the site defines" :requires ([bastro.tasks :as t]) :task (t/routes 'site)}
+  dev    {:doc "Dev server with live reload"      :requires ([bastro.tasks :as t]) :task (t/dev 'site)}}}

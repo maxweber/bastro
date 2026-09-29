@@ -1,0 +1,3 @@
+{:paths ["client"]
+ :output-dir "target/client"
+ :deps {io.github.cjohansen/replicant {:git/sha "219b5f0d516e2f51c62a03e652dcf0e198876e00"}}}

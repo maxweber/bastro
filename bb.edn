@@ -1,0 +1,16 @@
+{:paths ["src" "resources" "test" "dev"]
+ :deps  {bastro/bastro {:local/root "."}}
+ :tasks
+ {:requires ([babashka.fs :as fs])
+  test          {:doc "Run the babashka test suite"
+                 :task (load-file "test/runner.clj")}
+  client:build  {:doc "Compile the client (loader + dev client) with cherry and esbuild into resources/"
+                 :task (load-file "dev/build_client.clj")}
+  client:test   {:doc "Run the jsdom tests for the client (needs client:build first)"
+                 :task (do (shell "npx cherry compile --paths test --output-dir target/client test/test_island/counter.cljc")
+                           (shell "node client/test/run.mjs"))}
+  example:build {:doc "Build the example site"  :task (shell {:dir "example"} "bb build")}
+  example:dev   {:doc "Serve the example site"  :task (shell {:dir "example"} "bb dev")}
+  example:routes {:doc "List the example site's routes" :task (shell {:dir "example"} "bb routes")}
+  check         {:doc "Everything: bb tests, client tests, example build"
+                 :depends [test client:build client:test example:build]}}}

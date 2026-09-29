@@ -1,0 +1,15 @@
+:root { --fg: #1c1c1c; --muted: #6b6b6b; --accent: #2b5fd9; --bg: #fbfbf9; }
+@media (prefers-color-scheme: dark) { :root { --fg: #ececec; --muted: #9a9a9a; --accent: #8ab4ff; --bg: #161616; } }
+body { max-width: 42rem; margin: 2rem auto; padding: 0 1rem; font: 17px/1.6 system-ui, sans-serif; color: var(--fg); background: var(--bg); }
+a { color: var(--accent); }
+nav a { margin-right: .75rem; }
+.meta { color: var(--muted); font-size: .9rem; }
+.card { margin: 1.5rem 0; }
+.card h2 { margin: 0 0 .25rem; }
+pre { padding: 1rem; overflow-x: auto; background: rgba(127,127,127,.12); border-radius: 6px; }
+footer { margin-top: 3rem; color: var(--muted); font-size: .85rem; }
+
+.hero { width: 100%; height: auto; border-radius: 8px; }
+.counter { display: inline-flex; gap: .75rem; align-items: center; }
+.counter button { font-size: 1.25rem; padding: .25rem .75rem; }
+.count { min-width: 2rem; text-align: center; font-variant-numeric: tabular-nums; }
