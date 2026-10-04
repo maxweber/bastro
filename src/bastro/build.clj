@@ -35,9 +35,11 @@
 ;; --- pure steps ------------------------------------------------------------------------
 
 (defn page-doc
-  "A page value becomes document hiccup with its islands expanded."
+  "A page value becomes document hiccup with its islands expanded. A page that resolves to a
+   string is not a document: it is kept as it is and written verbatim."
   [page db]
-  (islands/expand (pages/resolve-page page db)))
+  (let [doc (pages/resolve-page page db)]
+    (if (string? doc) doc (islands/expand doc))))
 
 (defn with-island-script
   "Adds the island bundle script to a document that has islands."
@@ -56,11 +58,14 @@
   (distinct (mapcat images/placeholders (vals docs))))
 
 (defn finish-docs
-  "Images expanded from their plans, island script added where needed."
+  "Images expanded from their plans, island script added where needed. String pages pass through."
   [docs plans islands-src]
-  (update-vals docs #(-> % (images/expand plans) (with-island-script islands-src))))
+  (update-vals docs #(if (string? %) % (-> % (images/expand plans) (with-island-script islands-src)))))
 
-(defn render-docs [docs] (update-vals docs render/html))
+(defn render-docs
+  "Documents become HTML strings. String pages are already their own output."
+  [docs]
+  (update-vals docs #(if (string? %) % (render/html %))))
 
 (defn render-site
   "Page map to {url html} with no built assets: what the tests and the routes task need."
