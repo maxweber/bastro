@@ -43,6 +43,8 @@ the concepts; this file is about how the code is organized and how to change it 
 
 - Front matter keys are the author's, at the top level of an entry. bastro's keys are namespaced
   `:bastro/…`. Never put an unnamespaced key on an entry.
+- A page value is hiccup, a function of the db, or a string. A string page is output, not a
+  document: every step that walks or renders hiccup has to pass it through untouched.
 - Errors are `ex-info` with `:bastro/error` and, for content, `:errors` listing every file.
   `bastro.errors/format-error` renders them; the dev server and tasks rely on that shape.
 - Island containers carry `data-island`, `data-props` (transit), `data-client`, and a

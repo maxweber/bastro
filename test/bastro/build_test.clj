@@ -15,6 +15,18 @@
     (is (= "<!DOCTYPE html>\n<html><head></head><body><p>x</p></body></html>"
            (get (b/render-site {"/" (fn [_] plain)} {}) "/")))))
 
+(deftest string-pages-are-written-verbatim
+  (let [doc [:html [:head] [:body [:p "x"]]]
+        out (b/render-site {"/" doc
+                            "/robots.txt" "User-agent: *\n"
+                            "/sitemap.xml" (fn [db] (str "<urlset>" (:n db) "</urlset>"))}
+                           {:n 1})]
+    (is (= "User-agent: *\n" (get out "/robots.txt")))
+    (is (= "<urlset>1</urlset>" (get out "/sitemap.xml")))
+    (is (= "<!DOCTYPE html>\n<html><head></head><body><p>x</p></body></html>" (get out "/")))
+    (is (= [] (b/all-islands {"/robots.txt" "User-agent: *\n"})))
+    (is (empty? (b/all-images {"/robots.txt" "User-agent: *\n"})))))
+
 (deftest asset-lookup-and-fingerprints
   (is (= "/css/site-abc.css" (assets/asset {:bastro/assets {"/css/site.css" {:path "/css/site-abc.css"}}} "/css/site.css")))
   (is (= "/css/site.css" (assets/asset {} "/css/site.css")))

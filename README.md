@@ -89,7 +89,8 @@ Invalid files are reported all at once, with humanized errors, in the terminal a
 is hiccup or a function of the database returning hiccup. Dynamic routes are a `for` over a
 collection. `b/merge-pages` fails loudly when two sources claim the same URL. Layouts are
 functions from hiccup to hiccup. Nothing is stored: the map is re-derived from the content every
-time.
+time. A page that is a string, or a function returning one, is written as it is, with no doctype
+and no rendering. That covers `robots.txt`, a sitemap or a feed: `{"/robots.txt" "User-agent: *\n"}`.
 
 **Rendering.** Documents go through Replicant's string renderer, so the hiccup dialect is
 exactly what the browser side renders, aliases included.

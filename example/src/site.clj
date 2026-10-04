@@ -39,6 +39,7 @@
 (defn pages [db]
   (b/merge-pages
    {"/"       (fn [db] (layout/page db {:title "Home"} (v/home (published db))))
-    "/about/" (fn [db] (layout/page db {:title "About"} (v/about)))}
+    "/about/" (fn [db] (layout/page db {:title "About"} (v/about)))
+    "/robots.txt" "User-agent: *\nAllow: /\n"}
    (post-pages db)
    (tag-pages db)))

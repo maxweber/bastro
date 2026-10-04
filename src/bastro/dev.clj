@@ -41,16 +41,19 @@
     ((get-in state [:site :pages-fn]) db)))
 
 (defn dev-doc
-  "The document for a uri with images generated and the dev client added, or nil for no page."
+  "The document for a uri with images generated and the dev client added, or nil for no page.
+   A string page is returned as it is."
   [state uri]
   (when-let [page (get (site-pages state) uri)]
-    (let [doc (build/page-doc page (:db state))
-          plans (images/plan (images/placeholders doc) image-cache)]
-      (images/generate! plans)
-      (-> doc
-          (images/expand plans)
-          (build/with-island-script "/js/islands.js")
-          (h/update-head #(h/append % dev-script))))))
+    (let [doc (build/page-doc page (:db state))]
+      (if (string? doc)
+        doc
+        (let [plans (images/plan (images/placeholders doc) image-cache)]
+          (images/generate! plans)
+          (-> doc
+              (images/expand plans)
+              (build/with-island-script "/js/islands.js")
+              (h/update-head #(h/append % dev-script))))))))
 
 (defn- shell-doc [title & body]
   [:html {:lang "en"}
@@ -114,6 +117,7 @@
                       (catch Exception e {:error e}))]
       (cond
         (:error result) (send-event! ch :build-error (wire/error->wire (:error result)))
+        (string? (:doc result)) (send-event! ch :reload {})
         (:doc result) (send-event! ch :page (wire/page->wire (:doc result)))
         :else (send-event! ch :reload {})))))
 
@@ -163,6 +167,11 @@
 (defn- file-response [f]
   (response 200 (get mime (fs/extension f) "application/octet-stream") (fs/file f)))
 
+(defn- text-response
+  "A string page, served with the type its URL's extension names."
+  [uri body]
+  (response 200 (str (get mime (fs/extension uri) "text/plain") "; charset=utf-8") body))
+
 (defn- query-param [req name]
   (some-> (:query-string req)
           (->> (re-find (re-pattern (str "(?:^|&)" name "=([^&]*)"))))
@@ -187,6 +196,7 @@
                     (catch Exception e {:error e}))]
     (cond
       (:error result) (html 500 (error-doc (:error result)))
+      (string? (:doc result)) (text-response uri (:doc result))
       (:doc result) (html 200 (:doc result))
       (and (not (str/ends-with? uri "/")) (get (site-pages state) (str uri "/")))
       {:status 302 :headers {"Location" (str uri "/")}}
