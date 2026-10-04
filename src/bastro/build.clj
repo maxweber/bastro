@@ -3,6 +3,7 @@
    The exceptions are the tool invocations at the edges: esbuild for stylesheets, cherry and
    esbuild for the island bundle, sharp for images."
   (:require [babashka.fs :as fs]
+            [clojure.string :as str]
             [stasis.core :as stasis]
             [bastro.assets :as assets]
             [bastro.bundle :as bundle]
@@ -10,6 +11,7 @@
             [bastro.hiccup :as h]
             [bastro.images :as images]
             [bastro.islands :as islands]
+            [bastro.links :as links]
             [bastro.pages :as pages]
             [bastro.render :as render]))
 
@@ -74,6 +76,30 @@
 
 ;; --- the build --------------------------------------------------------------------------
 
+(defn- public-paths
+  "The URL of every file under public."
+  [public]
+  (if (fs/exists? public)
+    (into #{}
+          (comp (filter fs/regular-file?)
+                (map #(str "/" (str/join "/" (map str (fs/relativize public %))))))
+          (fs/glob public "**" {:hidden true}))
+    #{}))
+
+(defn check-links!
+  "Throws when a finished document points at a root-relative path the output will not hold.
+   config may name paths that something else serves under :served-elsewhere?."
+  [docs {:keys [public served-elsewhere?] :or {public "public" served-elsewhere? (constantly false)}} assets plans]
+  (let [known? (some-fn (links/output-paths (keys docs))
+                        (links/output-paths (public-paths public))
+                        (into #{} (map :path) (vals assets))
+                        (into #{} (comp (mapcat :variants) (map :path)) (vals plans))
+                        served-elsewhere?)
+        broken (links/broken docs known?)]
+    (when (seq broken)
+      (throw (ex-info (str (count broken) " broken internal link(s)")
+                      {:bastro/error :broken-links :errors (links/describe broken known?)})))))
+
 (defn- guard-out-dir! [out]
   (let [abs (fs/normalize (fs/absolutize out)) cwd (fs/normalize (fs/absolutize "."))]
     (when-not (and (fs/starts-with? abs cwd) (not= (str abs) (str cwd)))
@@ -101,7 +127,9 @@
           all-assets (merge css-assets js-assets)
           plans (images/plan (all-images docs) image-cache)
           _ (images/generate! plans)
-          html (render-docs (finish-docs docs plans (assets/asset {:bastro/assets all-assets} "/js/islands.js")))]
+          finished (finish-docs docs plans (assets/asset {:bastro/assets all-assets} "/js/islands.js"))
+          _ (check-links! finished config all-assets plans)
+          html (render-docs finished)]
       (stasis/empty-directory! out)
       (assets/copy-public! public out)
       (assets/write! all-assets out)
