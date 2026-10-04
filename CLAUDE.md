@@ -22,7 +22,8 @@ the concepts; this file is about how the code is organized and how to change it 
 |---|---|
 | `src/bastro/content.clj` | files to validated entries; front matter split; Malli errors collected |
 | `src/bastro/markdown.clj` | nextjournal/markdown: string to AST to hiccup |
-| `src/bastro/pages.clj` | page map helpers; `merge-pages` via Stasis |
+| `src/bastro/pages.clj` | page map helpers; `merge-pages` via Stasis; `paginate` |
+| `src/bastro/sitemap.clj` | sitemap XML from URLs, for a string page |
 | `src/bastro/islands.clj` | server side of the island contract: placeholder, expansion, manifest |
 | `src/bastro/images.clj` | image placeholders, header-based dimensions, sharp-cli variants |
 | `src/bastro/assets.clj` | fingerprinting, CSS through esbuild, copying |

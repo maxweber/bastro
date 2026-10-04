@@ -7,6 +7,7 @@
 
 (def config
   {:title  "Bastro example"
+   :url    "https://example.com"
    :out    "dist"
    :public "public"
    :css    {"/css/site.css" "styles/site.css"}
@@ -40,6 +41,11 @@
   (b/merge-pages
    {"/"       (fn [db] (layout/page db {:title "Home"} (v/home (published db))))
     "/about/" (fn [db] (layout/page db {:title "About"} (v/about)))
-    "/robots.txt" "User-agent: *\nAllow: /\n"}
+    "/robots.txt" "User-agent: *\nAllow: /\n"
+    "/sitemap.xml" (fn [db]
+                     (let [base (get-in db [:bastro/config :url])]
+                       (b/sitemap (cons (str base "/")
+                                        (for [p (published db)]
+                                          {:loc (str base (post-url p)) :lastmod (:date p)})))))}
    (post-pages db)
    (tag-pages db)))

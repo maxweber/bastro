@@ -92,6 +92,12 @@ functions from hiccup to hiccup. Nothing is stored: the map is re-derived from t
 time. A page that is a string, or a function returning one, is written as it is, with no doctype
 and no rendering. That covers `robots.txt`, a sitemap or a feed: `{"/robots.txt" "User-agent: *\n"}`.
 
+Two helpers return plain data for common page maps. `(b/paginate "/blog/" posts 20)` splits a
+list into pages at `/blog/`, `/blog/page/2/` and so on, each a map of `:url`, `:items`, `:page`,
+`:pages`, `:prev` and `:next`; the site turns each into a page. `(b/sitemap entries)` returns
+the XML for absolute URLs or `{:loc … :lastmod …}` maps, for use as a string page. The site
+chooses which URLs to list.
+
 **Rendering.** Documents go through Replicant's string renderer, so the hiccup dialect is
 exactly what the browser side renders, aliases included.
 
