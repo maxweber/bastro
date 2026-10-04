@@ -36,6 +36,7 @@ the concepts; this file is about how the code is organized and how to change it 
 | `client/bastro/*.cljs` | browser code: transit decoder, island loader, dev client |
 | `resources/bastro/` | compiled client, committed; rebuilt by `bb client:build` |
 | `example/` | a complete site and the integration test |
+| `dev/build_jar.clj` | `bb jar`: bastro and its dependencies as one jar a site can put on `:paths` |
 | `test/` | babashka tests, run by `test/runner.clj` |
 | `client/test/run.mjs` | jsdom tests for the client, payloads produced by babashka |
 

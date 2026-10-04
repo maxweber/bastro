@@ -9,6 +9,8 @@
   client:test   {:doc "Run the jsdom tests for the client (needs client:build first)"
                  :task (do (shell "npx cherry compile --paths test --output-dir target/client test/test_island/counter.cljc")
                            (shell "node client/test/run.mjs"))}
+  jar           {:doc "Pack bastro and its dependencies into target/bastro.jar, for sites that build without a JVM"
+                 :task (load-file "dev/build_jar.clj")}
   example:build {:doc "Build the example site"  :task (shell {:dir "example"} "bb build")}
   example:dev   {:doc "Serve the example site"  :task (shell {:dir "example"} "bb dev")}
   example:routes {:doc "List the example site's routes" :task (shell {:dir "example"} "bb routes")}

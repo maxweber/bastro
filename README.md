@@ -76,6 +76,21 @@ pipeline can still see it as data.
 Then `bb routes` prints every URL, `bb build` writes `dist/`, and `bb dev` serves the site with
 live reload on http://localhost:8321/.
 
+## A site without a JVM or Node
+
+babashka needs a JVM once to resolve `:deps`. A site can skip that by taking bastro as a single
+jar instead. `bb jar` in this repository writes `target/bastro.jar`, which holds bastro and its
+dependencies. Copy it into the site and put it on the paths:
+
+```clojure
+{:paths ["src" "lib/bastro.jar"]
+ :tasks {build {:requires ([bastro.tasks :as t]) :task (t/build 'site)}
+         dev   {:requires ([bastro.tasks :as t]) :task (t/dev 'site)}}}
+```
+
+Node is only called for islands, for stylesheets listed under `:css` and for `b/image`. A site
+that uses none of the three, with its CSS in `public/`, builds and serves with babashka alone.
+
 ## The pieces
 
 **Content.** Each collection is a directory of markdown files with an EDN map on top, validated
@@ -151,6 +166,7 @@ bb client:test    jsdom tests for the loader and dev client, driven by babashka-
 bb example:build  build the example site, the integration test
 bb example:dev    serve it
 bb check          all of the above
+bb jar            target/bastro.jar: bastro and its dependencies, for sites without a JVM
 ```
 
 The client's compiled modules under `resources/bastro/` are committed, so a site never compiles
