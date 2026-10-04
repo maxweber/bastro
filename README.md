@@ -95,6 +95,12 @@ and no rendering. That covers `robots.txt`, a sitemap or a feed: `{"/robots.txt"
 **Rendering.** Documents go through Replicant's string renderer, so the hiccup dialect is
 exactly what the browser side renders, aliases included.
 
+**Links.** Before anything is written, the build collects every root-relative `href` and `src`
+from the finished documents. Each one has to lead to a page, a file in `public/` or an asset
+bastro built. Otherwise the build fails and names the path and the pages that link to it, so a
+link to a post that was renamed or never existed does not reach the output. Links to other sites are not
+followed. The dev server does not check.
+
 **Islands.** An island is a `.cljc` namespace with three pure functions:
 
 ```clojure
@@ -140,6 +146,7 @@ every route.
 | `:public` | `"public"` | copied verbatim |
 | `:islands` | `"islands"` | where island namespaces live |
 | `:out` | `"dist"` | the output directory, emptied on each build |
+| `:served-elsewhere?` | none | a predicate on a root-relative path that something other than this site serves, e.g. `#(str/starts-with? % "/api/")`; links to such paths are not checked |
 
 Anything else in the config is yours; views read it through `(:bastro/config db)`.
 

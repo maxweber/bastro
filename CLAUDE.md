@@ -26,6 +26,7 @@ the concepts; this file is about how the code is organized and how to change it 
 | `src/bastro/islands.clj` | server side of the island contract: placeholder, expansion, manifest |
 | `src/bastro/images.clj` | image placeholders, header-based dimensions, sharp-cli variants |
 | `src/bastro/assets.clj` | fingerprinting, CSS through esbuild, copying |
+| `src/bastro/links.clj` | root-relative `href` and `src` of the finished documents, and which of them lead nowhere |
 | `src/bastro/bundle.clj` | the site's island bundle: generated entry, cherry, esbuild |
 | `src/bastro/render.clj` | Replicant string rendering, with the `&#39;` correction |
 | `src/bastro/build.clj` | the pipeline: `build!` and the pure steps it composes |
@@ -45,6 +46,8 @@ the concepts; this file is about how the code is organized and how to change it 
   `:bastro/…`. Never put an unnamespaced key on an entry.
 - A page value is hiccup, a function of the db, or a string. A string page is output, not a
   document: every step that walks or renders hiccup has to pass it through untouched.
+- A broken internal link fails the build, like invalid content does. The check reads the finished
+  documents, after islands and images are expanded, so it sees the URLs that get written.
 - Errors are `ex-info` with `:bastro/error` and, for content, `:errors` listing every file.
   `bastro.errors/format-error` renders them; the dev server and tasks rely on that shape.
 - Island containers carry `data-island`, `data-props` (transit), `data-client`, and a
